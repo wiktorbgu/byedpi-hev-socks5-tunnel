@@ -1,6 +1,8 @@
-### https://hub.docker.com/r/wiktorbgu/byedpi-hev-socks5-tunnel
+### [Pull from Docker Hub](https://hub.docker.com/r/wiktorbgu/byedpi-hev-socks5-tunnel)
 
-## Mikrotik settings
+## Mikrotik settings  
+### Подробная инструкция настройки Mikrotik [habr.ru](https://habr.com/ru/articles/838452/) или [web.archive.org](https://web.archive.org/web/20241106205452/https://habr.com/ru/articles/838452/)
+---
 
 ```
 /interface/bridge add name=Bridge-Docker port-cost-mode=short
@@ -26,9 +28,12 @@
 ### Route address list to BYEDPI TUNNEL
 
 ```
+
 /ip firewall mangle add action=mark-routing chain=prerouting comment="List DNS FWD route to byedpi tunnel" dst-address-list=za_dpi_FWD in-interface-list=LAN new-routing-mark=dpi_mark passthrough=no
 ```
 ### RUN container and enjoy! =)
 ```
 /container start [find interface=BYEDPI-TUN]
 ```
+---
+### [GitHub](https://github.com/wiktorbgu/byedpi-hev-socks5-tunnel)

@@ -8,7 +8,7 @@ IPV6="${IPV6:-}"
 MARK="${MARK:-438}"
 
 SOCKS5_UDP_MODE="${SOCKS5_UDP_MODE:-udp}"
-LOCAL_ROUTE="${LOCAL_ROUTE:-}"
+OTHER_ROUTE="${OTHER_ROUTE:-}"
 LOG_LEVEL="${LOG_LEVEL:-warn}"
 
 config_file() {
@@ -38,7 +38,11 @@ config_route() {
   echo "ip route del default" >> /route.sh
   echo "ip route add default via ${IPV4} dev ${TUN} metric 1" >> /route.sh
   echo "ip route add default via $(ip route | awk '/default/ && /eth0/ {print $3}') dev eth0 metric 10" >> /route.sh
-  echo "${LOCAL_ROUTE}" >> /route.sh
+  # exclude local network
+  echo "ip route add 10.0.0.0/8 via $(ip route | awk '/default/ && /eth0/ {print $3}') dev eth0" >> /route.sh
+  echo "ip route add 172.16.0.0/12 via $(ip route | awk '/default/ && /eth0/ {print $3}') dev eth0" >> /route.sh
+  echo "ip route add 192.168.0.0/16 via $(ip route | awk '/default/ && /eth0/ {print $3}') dev eth0" >> /route.sh
+  echo "${OTHER_ROUTE}" >> /route.sh
 }
 
 run() {
@@ -46,7 +50,7 @@ run() {
   config_route
   echo "echo 1 > /success" >> /route.sh
   hev-socks5-tunnel /hs5t.yml &
-  su - ciadpi -c "/opt/byedpi/ciadpi $*"
+  su - ciadpi -c "ciadpi $*"
 
 }
 
